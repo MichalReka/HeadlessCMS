@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HeadlessCMS.Domain\HeadlessCMS.Domain.csproj" />
+    <ProjectReference Include="..\HeadlessCMS.Infrastructure\HeadlessCMS.Infrastructure.csproj" />
     <ProjectReference Include="..\HeadlessCMS.Persistence\HeadlessCMS.Persistence.csproj" />
   </ItemGroup>
 

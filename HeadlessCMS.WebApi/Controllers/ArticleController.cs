@@ -1,4 +1,5 @@
 using HeadlessCMS.Domain.Entities;
+using HeadlessCMS.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HeadlessCMS.WebApi.Controllers
@@ -9,8 +10,11 @@ namespace HeadlessCMS.WebApi.Controllers
     {
         private readonly ILogger<ArticleController> _logger;
 
-        public ArticleController(ILogger<ArticleController> logger)
+        private IArticleRepository _articleRepository;
+
+        public ArticleController(ILogger<ArticleController> logger, IArticleRepository articleRepository)
         {
+            this._articleRepository = articleRepository;
             _logger = logger;
         }
 
@@ -18,8 +22,7 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpGet]
         public IEnumerable<Article> GetAll()
         {
-            return 
-            .ToArray();
+            return _articleRepository.GetAllArticles();
         }
     }
 }

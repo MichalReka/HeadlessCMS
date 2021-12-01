@@ -1,6 +1,7 @@
-using MediatR;
-using Microsoft.OpenApi.Models;
+using HeadlessCMS.Infrastructure;
 using HeadlessCMS.Persistence;
+using Microsoft.OpenApi.Models;
+
 namespace HeadlessCMS.WebApi
 {
     public class Startup
@@ -20,7 +21,8 @@ namespace HeadlessCMS.WebApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "HeadlessCMS.WebApi", Version = "v1" });
             });
-            services.AddDbContext<ApplicationDbContext>();
+            services.AddSQLiteDbContext(Configuration);
+            services.AddRepositories();
             //services.AddMediatR(typeof(Startup));
         }
 

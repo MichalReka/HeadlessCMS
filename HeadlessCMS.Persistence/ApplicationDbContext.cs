@@ -5,14 +5,8 @@ namespace HeadlessCMS.Persistence
 {
     public class ApplicationDbContext : DbContext
     {
-        // This constructor is used of runit testing
-        public ApplicationDbContext()
+        public ApplicationDbContext(DbContextOptions nameOrConnectionString) : base(nameOrConnectionString)
         {
-        }
-
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public DbSet<Article> Articles { get; set; }
