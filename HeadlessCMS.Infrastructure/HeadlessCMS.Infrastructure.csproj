@@ -11,4 +11,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HeadlessCMS.Domain\HeadlessCMS.Domain.csproj" />
+    <ProjectReference Include="..\HeadlessCMS.Persistence\HeadlessCMS.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>

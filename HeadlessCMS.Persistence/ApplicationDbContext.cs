@@ -5,14 +5,8 @@ namespace HeadlessCMS.Persistence
 {
     public class ApplicationDbContext : DbContext
     {
-        // This constructor is used of runit testing
-        public ApplicationDbContext()
+        public ApplicationDbContext(DbContextOptions options) : base(options)
         {
-        }
-
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public DbSet<Article> Articles { get; set; }
@@ -22,15 +16,14 @@ namespace HeadlessCMS.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Article>().ToTable("Article");
+            modelBuilder.Entity<User>().ToTable("User");
+            modelBuilder.Entity<UserRole>().ToTable("UserRole");
+            modelBuilder.Entity<Media>().ToTable("Media");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder
-                .UseSqlite("DataSource=app.db");
-            }
         }
 
         public async Task<int> SaveChangesAsync()

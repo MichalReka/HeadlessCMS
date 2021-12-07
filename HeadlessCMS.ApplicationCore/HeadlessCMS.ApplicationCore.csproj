@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HeadlessCMS.Domain\HeadlessCMS.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
