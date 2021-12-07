@@ -5,7 +5,7 @@ namespace HeadlessCMS.Persistence
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions nameOrConnectionString) : base(nameOrConnectionString)
+        public ApplicationDbContext(DbContextOptions options) : base(options)
         {
         }
 
@@ -16,15 +16,14 @@ namespace HeadlessCMS.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Article>().ToTable("Article");
+            modelBuilder.Entity<User>().ToTable("User");
+            modelBuilder.Entity<UserRole>().ToTable("UserRole");
+            modelBuilder.Entity<Media>().ToTable("Media");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder
-                .UseSqlite("DataSource=app.db");
-            }
         }
 
         public async Task<int> SaveChangesAsync()

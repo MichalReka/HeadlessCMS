@@ -8,11 +8,11 @@ namespace HeadlessCMS.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ArticlesController : GenericController<Article>
+    public class UsersController : GenericController<User>
     {
-        public ArticlesController(ApplicationDbContext context) : base(context)
+        public UsersController(ApplicationDbContext context) : base(context)
         {
-            genericDbSet = context.Articles;
+            genericDbSet = context.Users;
         }
     }
 }
