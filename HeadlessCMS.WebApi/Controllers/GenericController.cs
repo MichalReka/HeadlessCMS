@@ -1,6 +1,7 @@
 ﻿using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,6 +18,7 @@ namespace HeadlessCMS.WebApi.Controllers
 
         // GET: api/<GenericController>
         [HttpGet]
+        [EnableQuery]
         public IEnumerable<TEntity> Get()
         {
             return genericDbSet.ToArray();

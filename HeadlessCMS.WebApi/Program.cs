@@ -1,4 +1,5 @@
 using HeadlessCMS.Persistence;
+using Microsoft.AspNetCore.OData;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,7 @@ var configuration = new ConfigurationBuilder()
 
 builder.Services.AddSQLDbContext(builder.Configuration);
 builder.Services.AddRepositories();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddOData(options => options.Select().Filter().OrderBy()); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
