@@ -1,5 +1,6 @@
 ﻿using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,7 @@ namespace HeadlessCMS.WebApi.Controllers
         }
 
         // POST api/<GenericController>
+        [Authorize]
         [HttpPost]
         public void Post([FromBody] TEntity value)
         {
@@ -55,6 +57,7 @@ namespace HeadlessCMS.WebApi.Controllers
         }
 
         // PUT api/<GenericController>/5
+        [Authorize]
         [HttpPut("{id}")]
         public void Put(string id, [FromBody] TEntity value)
         {
@@ -62,6 +65,7 @@ namespace HeadlessCMS.WebApi.Controllers
         }
 
         // DELETE api/<GenericController>/5
+        [Authorize]
         [HttpDelete("{id}")]
         public void Delete(string id)
         {
