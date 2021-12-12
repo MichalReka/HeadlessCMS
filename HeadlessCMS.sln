@@ -9,9 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeadlessCMS.Domain", "Headl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeadlessCMS.ApplicationCore", "HeadlessCMS.ApplicationCore\HeadlessCMS.ApplicationCore.csproj", "{8CEDCF62-D531-447B-B366-0CD4EE0B3FCD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeadlessCMS.Infrastructure", "HeadlessCMS.Infrastructure\HeadlessCMS.Infrastructure.csproj", "{5749707C-13C2-42AB-A4FA-35D682FEA2E6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeadlessCMS.Persistence", "HeadlessCMS.Persistence\HeadlessCMS.Persistence.csproj", "{CA63B409-EFE6-41F4-8862-17A0AC1592DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeadlessCMS.Persistence", "HeadlessCMS.Persistence\HeadlessCMS.Persistence.csproj", "{CA63B409-EFE6-41F4-8862-17A0AC1592DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +29,6 @@ Global
 		{8CEDCF62-D531-447B-B366-0CD4EE0B3FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CEDCF62-D531-447B-B366-0CD4EE0B3FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CEDCF62-D531-447B-B366-0CD4EE0B3FCD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5749707C-13C2-42AB-A4FA-35D682FEA2E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5749707C-13C2-42AB-A4FA-35D682FEA2E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5749707C-13C2-42AB-A4FA-35D682FEA2E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5749707C-13C2-42AB-A4FA-35D682FEA2E6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CA63B409-EFE6-41F4-8862-17A0AC1592DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CA63B409-EFE6-41F4-8862-17A0AC1592DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA63B409-EFE6-41F4-8862-17A0AC1592DA}.Release|Any CPU.ActiveCfg = Release|Any CPU

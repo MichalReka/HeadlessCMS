@@ -1,8 +1,8 @@
 ﻿namespace HeadlessCMS.Domain.Entities
 {
-    public class User : BaseEntity
+    public class Authentication
     {
+        public string Name { get; set; }
         public string Password { get; set; }
-        public string RefreshTokens { get; set; }
     }
 }
