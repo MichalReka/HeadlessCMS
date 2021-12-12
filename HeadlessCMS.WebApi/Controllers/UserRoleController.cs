@@ -12,7 +12,6 @@ namespace HeadlessCMS.WebApi.Controllers
     {
         public UserRolesController(ApplicationDbContext context) : base(context)
         {
-            genericDbSet = context.UserRoles;
         }
     }
 }

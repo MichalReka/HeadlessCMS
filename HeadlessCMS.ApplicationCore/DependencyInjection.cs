@@ -10,7 +10,6 @@ namespace HeadlessCMS.ApplicationCore
         public static void AddApplicationCoreServices(this IServiceCollection serviceCollection,
              IConfiguration configuration)
         {
-            serviceCollection.AddScoped<ITokenService, TokenService>();
             serviceCollection.AddScoped<IUserAuthService, UserAuthService>();
         }
     }

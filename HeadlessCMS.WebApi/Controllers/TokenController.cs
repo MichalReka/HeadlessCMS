@@ -1,54 +1,52 @@
 ﻿using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
 using HeadlessCMS.Domain.Entities;
+using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace HeadlessCMS.WebApi.Controllers
 {
-    public class TokenController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class TokensController : ControllerBase
     {
-        [ApiController]
-        [Route("[controller]")]
-        public class TokensController : ControllerBase
+        private readonly ILogger<TokensController> _logger;
+        private readonly IUserAuthService _userAuthService;
+
+        public TokensController(ILogger<TokensController> logger, IUserAuthService userAuthService)
         {
-            private readonly ILogger<TokensController> _logger;
-            private readonly IUserAuthService _userAuthService;
+            _logger = logger;
+            _userAuthService = userAuthService;
+        }
 
-            public TokensController(ILogger<TokensController> logger, IUserAuthService userAuthService)
+        [HttpPost("accesstoken", Name = "login")]
+        public async Task<IActionResult> LoginAsync([FromBody] Authentication auth)
+        {
+            try
             {
-                _logger = logger;
-                _userAuthService = userAuthService;
+                return Ok(await _userAuthService.LoginAsync(auth));
             }
-
-            [HttpPost("accesstoken", Name = "login")]
-            public IActionResult Login([FromBody] Authentication auth)
+            catch (Exception e)
             {
-                try
-                {
-                    return Ok(_userAuthService.Login(auth));
-                }
-                catch (Exception e)
-                {
-                    return BadRequest(e);
-                }
+                return BadRequest(e.Message);
             }
+        }
 
-            [Authorize(AuthenticationSchemes = "refresh")]
-            [HttpPut("accesstoken", Name = "refresh")]
-            public IActionResult Refresh()
+        [Authorize(AuthenticationSchemes = "refresh")]
+        [HttpPut("accesstoken", Name = "refresh")]
+        public async Task<IActionResult> RefreshAsync()
+        {
+            Claim refreshtoken = User.Claims.FirstOrDefault(x => x.Type == "refresh");
+            Claim username = User.Claims.FirstOrDefault(x => x.Type == "username");
+
+            try
             {
-                Claim refreshtoken = User.Claims.FirstOrDefault(x => x.Type == "refresh");
-                Claim username = User.Claims.FirstOrDefault(x => x.Type == "username");
-
-                try
-                {
-                    return Ok(_userAuthService.Refresh(username, refreshtoken));
-                }
-                catch (Exception e)
-                {
-                    return BadRequest(e.Message);
-                }
+                return Ok(await _userAuthService.RefreshAsync(username, refreshtoken));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
             }
         }
     }

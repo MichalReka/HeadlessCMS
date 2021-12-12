@@ -5,8 +5,8 @@ namespace HeadlessCMS.ApplicationCore.Core.Interfaces.Services
 {
     public interface IUserAuthService
     {
-        Tokens Refresh(Claim userClaim, Claim refreshClaim);
-        Tokens Login(Authentication authentication);
+        Task<Tokens> RefreshAsync(Claim userClaim, Claim refreshClaim);
+        Task<Tokens> LoginAsync(Authentication authentication);
 
     }
 }

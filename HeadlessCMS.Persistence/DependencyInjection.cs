@@ -11,7 +11,7 @@ namespace HeadlessCMS.Persistence
              IConfiguration configuration)
         {
             serviceCollection.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-            serviceCollection.AddScoped<IDbSetsProvider, DbSetsProvider>();
+            serviceCollection.AddScoped<IDbContextProvider, DbContextProvider>();
         }
 
         public static void AddRepositories(this IServiceCollection serviceCollection)

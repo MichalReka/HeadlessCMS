@@ -2,8 +2,9 @@
 
 namespace HeadlessCMS.ApplicationCore.Core.Interfaces.Providers
 {
-    public interface IDbSetsProvider
+    public interface IDbContextProvider
     {
         DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class;
+        Task SaveAsync();
     }
 }

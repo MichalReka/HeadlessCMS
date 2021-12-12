@@ -1,12 +1,12 @@
-﻿using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
-using HeadlessCMS.Domain.Entities;
+﻿using HeadlessCMS.Domain.Entities;
+using HeadlessCMS.Domain.Interfaces;
 using JWT.Algorithms;
 using JWT.Builder;
 using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace HeadlessCMS.ApplicationCore.Services
+namespace HeadlessCMS.Domain.Services
 {
     public class TokenService : ITokenService
     {
@@ -21,11 +21,11 @@ namespace HeadlessCMS.ApplicationCore.Services
         {
             return new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(Encoding.ASCII.GetBytes(_secret))
+                .WithSecret(Encoding.UTF8.GetBytes(_secret))
                 .AddClaim("exp", DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds())
                 .AddClaim("username", user.Name)
-                .Issuer("JwtExample")
-                .Audience("access")
+                .Issuer(@"https://localhost:44316")
+                .Audience(@"https://localhost:44316")
                 .Encode();
         }
 
@@ -38,7 +38,7 @@ namespace HeadlessCMS.ApplicationCore.Services
                 Convert.ToBase64String(randomNumber);
             }
 
-            var randomString = System.Text.Encoding.ASCII.GetString(randomNumber);
+            var randomString = System.Text.Encoding.UTF8.GetString(randomNumber);
 
             string jwt = new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
@@ -46,8 +46,8 @@ namespace HeadlessCMS.ApplicationCore.Services
                 .AddClaim("exp", DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeSeconds())
                 .AddClaim("refresh", randomString)
                 .AddClaim("username", user.Name)
-                .Issuer("JwtExample")
-                .Audience("refresh")
+                .Issuer(@"https://localhost:44316")
+                .Audience(@"https://localhost:44316")
                 .Encode();
 
             return (randomString, jwt);

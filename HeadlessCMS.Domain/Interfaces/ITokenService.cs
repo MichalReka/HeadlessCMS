@@ -1,6 +1,6 @@
 ﻿using HeadlessCMS.Domain.Entities;
 
-namespace HeadlessCMS.ApplicationCore.Core.Interfaces.Services
+namespace HeadlessCMS.Domain.Interfaces
 {
     public interface ITokenService
     {

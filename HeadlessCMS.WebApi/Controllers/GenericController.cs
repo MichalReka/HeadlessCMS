@@ -1,5 +1,6 @@
 ﻿using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -12,9 +13,12 @@ namespace HeadlessCMS.WebApi.Controllers
     public abstract class GenericController<TEntity> : ControllerBase where TEntity : BaseEntity
     {
         protected DbSet<TEntity> genericDbSet;
+        protected ApplicationDbContext applicationDbContext;
 
-        protected GenericController(ApplicationDbContext dbContext)
+        protected GenericController(ApplicationDbContext applicationDbContext)
         {
+            this.applicationDbContext = applicationDbContext;
+            genericDbSet = applicationDbContext.Set<TEntity>();
         }
 
         // GET: api/<GenericController>
@@ -49,30 +53,33 @@ namespace HeadlessCMS.WebApi.Controllers
         }
 
         // POST api/<GenericController>
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public void Post([FromBody] TEntity value)
+        public async void Post([FromBody] TEntity value)
         {
             genericDbSet.Add(value);
+            await applicationDbContext.SaveChangesAsync();
         }
 
         // PUT api/<GenericController>/5
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("{id}")]
-        public void Put(string id, [FromBody] TEntity value)
+        public async Task PutAsync(string id, [FromBody] TEntity value)
         {
             genericDbSet.Update(value);
+            await applicationDbContext.SaveChangesAsync();
         }
 
         // DELETE api/<GenericController>/5
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
-        public void Delete(string id)
+        public async Task DeleteAsync(string id)
         {
             var entity = genericDbSet.Find(id);
             if(entity != null)
             {
                 genericDbSet.Remove(entity);
+                await applicationDbContext.SaveChangesAsync();
             }
         }
     }

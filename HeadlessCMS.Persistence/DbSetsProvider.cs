@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HeadlessCMS.Persistence
 {
-    public class DbSetsProvider : IDbSetsProvider
+    public class DbContextProvider : IDbContextProvider
     {
         private readonly ApplicationDbContext _context;
 
-        public DbSetsProvider(ApplicationDbContext dbContext)
+        public DbContextProvider(ApplicationDbContext dbContext)
         {
             _context = dbContext;
         }
@@ -15,6 +15,11 @@ namespace HeadlessCMS.Persistence
         public DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class
         {
             return _context.Set<TEntity>();
+        }
+
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

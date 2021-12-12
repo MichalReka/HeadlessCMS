@@ -12,7 +12,6 @@ namespace HeadlessCMS.WebApi.Controllers
     {
         public MediasController(ApplicationDbContext context) : base(context)
         {
-            genericDbSet = context.Medias;
         }
     }
 }

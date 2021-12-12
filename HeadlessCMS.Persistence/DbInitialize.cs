@@ -23,9 +23,22 @@ namespace HeadlessCMS.Persistence
                 }
             };
 
+            var users = new List<User>();
+            users.Add(new User {
+                Name = "Admin",
+                CreatedDate = DateTime.Now,
+                UpdatedDate = DateTime.Now,
+                Password = "Admin",
+            });
+
             foreach (UserRole userRole in userRoles)
             {
                 context.UserRoles.Add(userRole);
+            }
+
+            foreach (User user in users)
+            {
+                context.Users.Add(user);
             }
 
             context.SaveChanges();

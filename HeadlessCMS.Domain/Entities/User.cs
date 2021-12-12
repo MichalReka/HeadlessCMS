@@ -3,6 +3,6 @@
     public class User : BaseEntity
     {
         public string Password { get; set; }
-        public string RefreshTokens { get; set; }
+        public string? RefreshTokens { get; set; }
     }
 }
