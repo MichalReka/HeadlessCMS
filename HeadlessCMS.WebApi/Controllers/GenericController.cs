@@ -18,6 +18,7 @@ namespace HeadlessCMS.WebApi.Controllers
         protected GenericController(ApplicationDbContext applicationDbContext)
         {
             this.applicationDbContext = applicationDbContext;
+            applicationDbContext.Database.EnsureCreated();
             genericDbSet = applicationDbContext.Set<TEntity>();
         }
 

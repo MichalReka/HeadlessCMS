@@ -25,7 +25,7 @@ namespace HeadlessCMS.Persistence
                     Name = "Admin",
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now,
-                    Password = passwordEncryptService.Encrypt("1234"),
+                    Password = "mVSVX8hnyyEV2amfzEfSe3exh5MNL16BRCxQuX1Ndtcw==noMMfF7gdD30aKMWRlrGQ=",
                 }
             };
 

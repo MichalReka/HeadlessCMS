@@ -29,7 +29,7 @@ namespace HeadlessCMS.ApplicationCore.Services
             if (user == null)
                 throw new Exception("User doesn't exist");
 
-            bool validPassword = user.Password == _passwordEncryptService.Encrypt(authentication.Password);
+            bool validPassword = _passwordEncryptService.VerifyHashedPassword(user.Password,authentication.Password);
 
             if (validPassword)
             {

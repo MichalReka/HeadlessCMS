@@ -2,7 +2,6 @@
 using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -28,7 +27,6 @@ JwtBearerOptions options(JwtBearerOptions jwtBearerOptions)
     jwtBearerOptions.SaveToken = true;
     jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
     {
-        
         ValidateIssuerSigningKey = true,
         ValidIssuer = @"https://localhost:44316",
         ValidAudience = @"https://localhost:44316",
