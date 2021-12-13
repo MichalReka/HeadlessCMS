@@ -1,12 +1,15 @@
 ﻿using HeadlessCMS.Domain.Entities;
+using HeadlessCMS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace HeadlessCMS.Persistence
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
-        public ApplicationDbContext(DbContextOptions options) : base(options)
+        private readonly IPasswordEncryptService _passwordEncryptService;
+        public ApplicationDbContext(DbContextOptions options, IPasswordEncryptService passwordEncryptService) : base(options)
         {
+            _passwordEncryptService = passwordEncryptService;
         }
 
         public DbSet<Article> Articles { get; set; }
@@ -20,10 +23,8 @@ namespace HeadlessCMS.Persistence
             modelBuilder.Entity<User>().ToTable("User");
             modelBuilder.Entity<UserRole>().ToTable("UserRole");
             modelBuilder.Entity<Media>().ToTable("Media");
-        }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+            DbInitializer.Initialize(modelBuilder, _passwordEncryptService);
         }
 
         public async Task<int> SaveChangesAsync()

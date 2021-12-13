@@ -1,4 +1,4 @@
-﻿using HeadlessCMS.ApplicationCore.Core.Interfaces.Providers;
+﻿using HeadlessCMS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +11,7 @@ namespace HeadlessCMS.Persistence
              IConfiguration configuration)
         {
             serviceCollection.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-            serviceCollection.AddScoped<IDbContextProvider, DbContextProvider>();
+            serviceCollection.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
         }
 
         public static void AddRepositories(this IServiceCollection serviceCollection)

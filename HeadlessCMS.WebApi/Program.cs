@@ -2,6 +2,7 @@
 using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -27,14 +28,15 @@ JwtBearerOptions options(JwtBearerOptions jwtBearerOptions)
     jwtBearerOptions.SaveToken = true;
     jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
     {
+        
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Token").Value)),
         ValidIssuer = @"https://localhost:44316",
         ValidAudience = @"https://localhost:44316",
         ValidateAudience = true,
         ValidateIssuer = true,
         ValidateLifetime = true, //validate the expiration and not before values in the token
-        ClockSkew = TimeSpan.FromMinutes(1) //1 minute tolerance for the expiration date
+        ClockSkew = TimeSpan.FromMinutes(1), //1 minute tolerance for the expiration date
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Token").Value)),
     };
     //if (audience == "access")
     //{
@@ -99,14 +101,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<ApplicationDbContext>();
-    DbInitializer.Initialize(context);
-}
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -121,3 +115,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+// Configure the HTTP request pipeline.

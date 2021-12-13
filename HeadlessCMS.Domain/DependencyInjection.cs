@@ -10,6 +10,7 @@ namespace HeadlessCMS.ApplicationCore
         public static void AddDomainServices(this IServiceCollection serviceCollection,
              IConfiguration configuration)
         {
+            serviceCollection.AddScoped<IPasswordEncryptService, PasswordEncryptService>();
             serviceCollection.AddScoped<ITokenService, TokenService>();
         }
     }

@@ -3,6 +3,9 @@ using HeadlessCMS.Domain.Interfaces;
 using JWT.Algorithms;
 using JWT.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -19,14 +22,33 @@ namespace HeadlessCMS.Domain.Services
 
         public string GenerateAccessToken(User user)
         {
-            return new JwtBuilder()
-                .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(Encoding.UTF8.GetBytes(_secret))
-                .AddClaim("exp", DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds())
-                .AddClaim("username", user.Name)
-                .Issuer(@"https://localhost:44316")
-                .Audience(@"https://localhost:44316")
-                .Encode();
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Name),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(2);
+            var token = new JwtSecurityToken(
+                "https://localhost:44316",
+                "https://localhost:44316",
+                claims,
+                expires: expires,
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+
+            //return new JwtBuilder()
+            //    .WithAlgorithm(new HMACSHA256Algorithm())
+            //    .WithSecret(Encoding.UTF8.GetBytes(_secret))
+            //    .AddClaim("exp", DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds())
+            //    .AddClaim("username", user.Name)
+            //    .Issuer(@"https://localhost:44316")
+            //    .Audience(@"https://localhost:44316")
+            //    .Encode();
         }
 
         public (string refreshToken, string jwt) GenerateRefreshToken(User user)

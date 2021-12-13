@@ -1,5 +1,4 @@
-﻿using HeadlessCMS.ApplicationCore.Core.Interfaces.Providers;
-using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
+﻿using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +10,15 @@ namespace HeadlessCMS.ApplicationCore.Services
     {
         private readonly DbSet<User> _users;
         private readonly ITokenService _tokenService;
-        private readonly IDbContextProvider _dbContextProvider;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly IPasswordEncryptService _passwordEncryptService;
 
-        public UserAuthService(IDbContextProvider dbContextProvider, ITokenService tokenService)
+        public UserAuthService(IApplicationDbContext dbContext, ITokenService tokenService, IPasswordEncryptService passwordEncryptService)
         {
-            _users=dbContextProvider.GetDbSet<User>();
+            _users=dbContext.Set<User>();
             _tokenService=tokenService;
-            _dbContextProvider=dbContextProvider;
+            _dbContext=dbContext;
+            _passwordEncryptService = passwordEncryptService;
         }
 
         public async Task<Tokens> LoginAsync(Authentication authentication)
@@ -28,7 +29,7 @@ namespace HeadlessCMS.ApplicationCore.Services
             if (user == null)
                 throw new Exception("User doesn't exist");
 
-            bool validPassword = user.Password == authentication.Password;
+            bool validPassword = user.Password == _passwordEncryptService.Encrypt(authentication.Password);
 
             if (validPassword)
             {
@@ -40,7 +41,7 @@ namespace HeadlessCMS.ApplicationCore.Services
                 user.RefreshTokens = refreshToken.jwt;
 
                 _users.Update(user);
-                await _dbContextProvider.SaveAsync();
+                await _dbContext.SaveChangesAsync();
 
                 return new Tokens
                 {
@@ -76,7 +77,7 @@ namespace HeadlessCMS.ApplicationCore.Services
                 //user.RefreshTokens.Remove(token);
 
                 _users.Update(user);
-                await _dbContextProvider.SaveAsync();
+                await _dbContext.SaveChangesAsync();
 
                 return new Tokens
                 {
