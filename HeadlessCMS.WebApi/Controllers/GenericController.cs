@@ -25,7 +25,7 @@ namespace HeadlessCMS.WebApi.Controllers
         // GET: api/<GenericController>
         [HttpGet]
         [EnableQuery]
-        public IEnumerable<TEntity> Get()
+        public virtual IEnumerable<TEntity> Get()
         {
             return genericDbSet.ToArray();
         }
@@ -34,7 +34,7 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<TEntity> Get(string id)
+        public virtual ActionResult<TEntity> Get(string id)
         {
             try
             {
@@ -56,17 +56,20 @@ namespace HeadlessCMS.WebApi.Controllers
         // POST api/<GenericController>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public async void Post([FromBody] TEntity value)
+        public virtual async Task Post([FromBody] TEntity value)
         {
+            value.CreatedDate = DateTime.Now;
+            value.UpdatedDate = DateTime.Now;
             genericDbSet.Add(value);
             await applicationDbContext.SaveChangesAsync();
         }
 
         // PUT api/<GenericController>/5
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut("{id}")]
-        public async Task PutAsync(string id, [FromBody] TEntity value)
+        [HttpPut]
+        public virtual async Task PutAsync([FromBody] TEntity value)
         {
+            value.UpdatedDate = DateTime.Now;
             genericDbSet.Update(value);
             await applicationDbContext.SaveChangesAsync();
         }
@@ -74,7 +77,7 @@ namespace HeadlessCMS.WebApi.Controllers
         // DELETE api/<GenericController>/5
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
-        public async Task DeleteAsync(string id)
+        public virtual async Task DeleteAsync(string id)
         {
             var entity = genericDbSet.Find(id);
             if(entity != null)

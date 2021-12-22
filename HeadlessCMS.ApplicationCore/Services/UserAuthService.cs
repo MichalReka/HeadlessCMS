@@ -1,8 +1,12 @@
 ﻿using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
+using HeadlessCMS.ApplicationCore.Dtos;
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Domain.Interfaces;
+using HeadlessCMS.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using AutoMapper;
+
 
 namespace HeadlessCMS.ApplicationCore.Services
 {
@@ -10,15 +14,24 @@ namespace HeadlessCMS.ApplicationCore.Services
     {
         private readonly DbSet<User> _users;
         private readonly ITokenService _tokenService;
-        private readonly IApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IPasswordEncryptService _passwordEncryptService;
+        private readonly IMapper _mapper;
 
-        public UserAuthService(IApplicationDbContext dbContext, ITokenService tokenService, IPasswordEncryptService passwordEncryptService)
+        public UserAuthService(ApplicationDbContext dbContext, ITokenService tokenService, IPasswordEncryptService passwordEncryptService, IMapper mapper)
         {
             _users=dbContext.Set<User>();
             _tokenService=tokenService;
             _dbContext=dbContext;
             _passwordEncryptService = passwordEncryptService;
+            _mapper = mapper;
+        }
+
+        public User HandleRegister(UserDto userDto)
+        {
+            User user = _mapper.Map<User>(userDto);
+            (user.Password, user.Salt) = _passwordEncryptService.HashPassword(user.Password);
+            return user;
         }
 
         public async Task<Tokens> LoginAsync(Authentication authentication)
@@ -29,7 +42,7 @@ namespace HeadlessCMS.ApplicationCore.Services
             if (user == null)
                 throw new Exception("User doesn't exist");
 
-            bool validPassword = _passwordEncryptService.VerifyHashedPassword(user.Password,authentication.Password);
+            bool validPassword = _passwordEncryptService.VerifyHashedPassword(user.Password, user.Salt, authentication.Password);
 
             if (validPassword)
             {
@@ -38,7 +51,7 @@ namespace HeadlessCMS.ApplicationCore.Services
                 //if (user.RefreshTokens == null)
                 //    user.RefreshTokens = new List<string>();
 
-                user.RefreshTokens = refreshToken.jwt;
+                user.RefreshTokens = refreshToken.refreshToken;
 
                 _users.Update(user);
                 await _dbContext.SaveChangesAsync();
@@ -90,5 +103,7 @@ namespace HeadlessCMS.ApplicationCore.Services
                 throw new System.Exception("Refresh token incorrect");
             }
         }
+
+
     }
 }

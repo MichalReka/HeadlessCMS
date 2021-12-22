@@ -2,7 +2,7 @@
 {
     public interface IPasswordEncryptService
     {
-        string Encrypt(string password);
-        bool VerifyHashedPassword(string hashedPassword, string providedPassword);
+        (string, byte[]) HashPassword(string password);
+        bool VerifyHashedPassword(string hashedPassword, byte[] salt, string providedPassword);
     }
 }

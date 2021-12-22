@@ -1,4 +1,5 @@
 ﻿using HeadlessCMS.ApplicationCore;
+using HeadlessCMS.ApplicationCore.Core.Configurations;
 using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
@@ -18,6 +19,7 @@ var configuration = new ConfigurationBuilder()
 builder.Services.AddSQLDbContext(builder.Configuration);
 builder.Services.AddDomainServices(builder.Configuration);
 builder.Services.AddApplicationCoreServices(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(MapperProfile));
 builder.Services.AddControllers().AddOData(options => options.Select().Filter().OrderBy());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

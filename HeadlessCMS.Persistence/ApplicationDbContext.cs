@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HeadlessCMS.Persistence
 {
-    public class ApplicationDbContext : DbContext, IApplicationDbContext
+    public class ApplicationDbContext : DbContext
     {
         private readonly IPasswordEncryptService _passwordEncryptService;
         public ApplicationDbContext(DbContextOptions options, IPasswordEncryptService passwordEncryptService) : base(options)

@@ -28,9 +28,11 @@ namespace HeadlessCMS.Domain.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expires = DateTime.Now.AddDays(2);
+
             var token = new JwtSecurityToken(
                 "https://localhost:44316",
                 "https://localhost:44316",
@@ -40,15 +42,6 @@ namespace HeadlessCMS.Domain.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-
-            //return new JwtBuilder()
-            //    .WithAlgorithm(new HMACSHA256Algorithm())
-            //    .WithSecret(Encoding.UTF8.GetBytes(_secret))
-            //    .AddClaim("exp", DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds())
-            //    .AddClaim("username", user.Name)
-            //    .Issuer(@"https://localhost:44316")
-            //    .Audience(@"https://localhost:44316")
-            //    .Encode();
         }
 
         public (string refreshToken, string jwt) GenerateRefreshToken(User user)
@@ -71,6 +64,20 @@ namespace HeadlessCMS.Domain.Services
                 .Issuer(@"https://localhost:44316")
                 .Audience(@"https://localhost:44316")
                 .Encode();
+
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(2);
+            //var token = new JwtSecurityToken(
+            //    "https://localhost:44316",
+            //    "https://localhost:44316",
+            //    claims,
+            //    expires: expires,
+            //    signingCredentials: creds
+            //);
+
+            //return new JwtSecurityTokenHandler().WriteToken(token);
 
             return (randomString, jwt);
         }

@@ -17,7 +17,7 @@ namespace HeadlessCMS.Persistence
                     UpdatedDate = DateTime.Now
                 }
             };
-            
+            (string password, byte[] salt) = passwordEncryptService.HashPassword("1234");
             var users = new User[]
             {
                 new User {
@@ -25,7 +25,8 @@ namespace HeadlessCMS.Persistence
                     Name = "Admin",
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now,
-                    Password = "mVSVX8hnyyEV2amfzEfSe3exh5MNL16BRCxQuX1Ndtcw==noMMfF7gdD30aKMWRlrGQ=",
+                    Password = password,
+                    Salt = salt
                 }
             };
 

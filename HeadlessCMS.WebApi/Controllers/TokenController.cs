@@ -37,12 +37,12 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpPut("accesstoken", Name = "refresh")]
         public async Task<IActionResult> RefreshAsync()
         {
-            Claim refreshtoken = User.Claims.FirstOrDefault(x => x.Type == "refresh");
+            Claim refreshToken = User.Claims.FirstOrDefault(x => x.Type == "refresh");
             Claim username = User.Claims.FirstOrDefault(x => x.Type == "username");
 
             try
             {
-                return Ok(await _userAuthService.RefreshAsync(username, refreshtoken));
+                return Ok(await _userAuthService.RefreshAsync(username, refreshToken));
             }
             catch (Exception e)
             {
