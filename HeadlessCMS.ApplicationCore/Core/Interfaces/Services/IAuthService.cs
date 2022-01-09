@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace HeadlessCMS.ApplicationCore.Core.Interfaces.Services
 {
-    public interface IUserAuthService
+    public interface IAuthService
     {
         Task<Tokens> RefreshAsync(Claim userClaim, Claim refreshClaim);
         Task<Tokens> LoginAsync(Authentication authentication);

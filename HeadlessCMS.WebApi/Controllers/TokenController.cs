@@ -12,9 +12,9 @@ namespace HeadlessCMS.WebApi.Controllers
     public class TokensController : ControllerBase
     {
         private readonly ILogger<TokensController> _logger;
-        private readonly IUserAuthService _userAuthService;
+        private readonly IAuthService _userAuthService;
 
-        public TokensController(ILogger<TokensController> logger, IUserAuthService userAuthService)
+        public TokensController(ILogger<TokensController> logger, IAuthService userAuthService)
         {
             _logger = logger;
             _userAuthService = userAuthService;

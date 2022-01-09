@@ -10,7 +10,7 @@ using AutoMapper;
 
 namespace HeadlessCMS.ApplicationCore.Services
 {
-    public class UserAuthService : IUserAuthService
+    public class AuthService : IAuthService
     {
         private readonly DbSet<User> _users;
         private readonly ITokenService _tokenService;
@@ -18,7 +18,7 @@ namespace HeadlessCMS.ApplicationCore.Services
         private readonly IPasswordEncryptService _passwordEncryptService;
         private readonly IMapper _mapper;
 
-        public UserAuthService(ApplicationDbContext dbContext, ITokenService tokenService, IPasswordEncryptService passwordEncryptService, IMapper mapper)
+        public AuthService(ApplicationDbContext dbContext, ITokenService tokenService, IPasswordEncryptService passwordEncryptService, IMapper mapper)
         {
             _users=dbContext.Set<User>();
             _tokenService=tokenService;
@@ -51,7 +51,7 @@ namespace HeadlessCMS.ApplicationCore.Services
                 //if (user.RefreshTokens == null)
                 //    user.RefreshTokens = new List<string>();
 
-                user.RefreshTokens = refreshToken.refreshToken;
+                user.RefreshTokens=refreshToken.refreshToken;
 
                 _users.Update(user);
                 await _dbContext.SaveChangesAsync();
@@ -80,12 +80,11 @@ namespace HeadlessCMS.ApplicationCore.Services
 
             //string token = user.RefreshTokens.FirstOrDefault(x => x == refreshClaim.Value);
 
-            //if (token != null)
-            if (refreshClaim.Value == user.RefreshTokens)
+            if (user.RefreshTokens != null)
             {
                 var refreshToken = _tokenService.GenerateRefreshToken(user);
 
-                user.RefreshTokens = refreshToken.refreshToken;
+                user.RefreshTokens=refreshToken.refreshToken;
 
                 //user.RefreshTokens.Remove(token);
 

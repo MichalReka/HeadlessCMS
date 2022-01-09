@@ -1,4 +1,5 @@
-﻿using HeadlessCMS.Domain.Entities;
+﻿using HeadlessCMS.ApplicationCore.Services;
+using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,9 +15,13 @@ namespace HeadlessCMS.WebApi.Controllers
     {
         protected DbSet<TEntity> genericDbSet;
         protected ApplicationDbContext applicationDbContext;
+        protected IUserService userService;
 
-        protected GenericController(ApplicationDbContext applicationDbContext)
+        public ApplicationDbContext Context { get; }
+
+        protected GenericController(ApplicationDbContext applicationDbContext, IUserService userService)
         {
+            this.userService = userService;
             this.applicationDbContext = applicationDbContext;
             applicationDbContext.Database.EnsureCreated();
             genericDbSet = applicationDbContext.Set<TEntity>();
@@ -50,7 +55,6 @@ namespace HeadlessCMS.WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
         // POST api/<GenericController>
@@ -58,8 +62,11 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpPost]
         public virtual async Task Post([FromBody] TEntity value)
         {
+            var userId = new Guid(userService.GetCurrentUserId(User));
             value.CreatedDate = DateTime.Now;
             value.UpdatedDate = DateTime.Now;
+            value.CreatedBy = userId;
+            value.UpdatedBy = userId;
             genericDbSet.Add(value);
             await applicationDbContext.SaveChangesAsync();
         }
@@ -69,7 +76,9 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpPut]
         public virtual async Task PutAsync([FromBody] TEntity value)
         {
+            var userId = new Guid(userService.GetCurrentUserId(User));
             value.UpdatedDate = DateTime.Now;
+            value.UpdatedBy = userId;
             genericDbSet.Update(value);
             await applicationDbContext.SaveChangesAsync();
         }
@@ -80,7 +89,7 @@ namespace HeadlessCMS.WebApi.Controllers
         public virtual async Task DeleteAsync(string id)
         {
             var entity = genericDbSet.Find(id);
-            if(entity != null)
+            if (entity != null)
             {
                 genericDbSet.Remove(entity);
                 await applicationDbContext.SaveChangesAsync();

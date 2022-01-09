@@ -21,7 +21,15 @@ builder.Services.AddDomainServices(builder.Configuration);
 builder.Services.AddApplicationCoreServices(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 builder.Services.AddControllers().AddOData(options => options.Select().Filter().OrderBy());
-
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:4200");
+            builder.AllowAnyHeader();
+        });
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 JwtBearerOptions options(JwtBearerOptions jwtBearerOptions)
 {
@@ -113,6 +121,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseCors();
 
 app.Run();
 // Configure the HTTP request pipeline.

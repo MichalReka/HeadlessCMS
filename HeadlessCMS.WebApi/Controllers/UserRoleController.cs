@@ -1,4 +1,5 @@
-﻿using HeadlessCMS.Domain.Entities;
+﻿using HeadlessCMS.ApplicationCore.Services;
+using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ namespace HeadlessCMS.WebApi.Controllers
     [ApiController]
     public class UserRolesController : GenericController<UserRole>
     {
-        public UserRolesController(ApplicationDbContext context) : base(context)
+        public UserRolesController(ApplicationDbContext context, IUserService userService) : base(context, userService)
         {
         }
     }
