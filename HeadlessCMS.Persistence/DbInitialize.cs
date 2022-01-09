@@ -1,33 +1,38 @@
 ﻿using HeadlessCMS.Domain.Entities;
+using HeadlessCMS.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace HeadlessCMS.Persistence
 {
     public static class DbInitializer
     {
-        public static void Initialize(ApplicationDbContext context)
+        public static void Initialize(ModelBuilder modelBuilder, IPasswordEncryptService passwordEncryptService)
         {
-            context.Database.EnsureCreated();
-
-            if (context.UserRoles.Any())
-            {
-                return;   // DB has been seeded
-            }
-
             var userRoles = new UserRole[]
             {
                 new UserRole{
+                    Id = Guid.NewGuid(),
                     Name = "Admin",
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now
                 }
             };
-
-            foreach (UserRole userRole in userRoles)
+            (string password, byte[] salt) = passwordEncryptService.HashPassword("1234");
+            var users = new User[]
             {
-                context.UserRoles.Add(userRole);
-            }
+                new User {
+                    Id = Guid.NewGuid(),
+                    Name = "Admin",
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now,
+                    Password = password,
+                    Salt = salt
+                }
+            };
 
-            context.SaveChanges();
+
+            modelBuilder.Entity<UserRole>().HasData(userRoles);
+            modelBuilder.Entity<User>().HasData(users);
         }
     }
 }

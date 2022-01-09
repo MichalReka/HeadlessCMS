@@ -1,5 +1,8 @@
-﻿using HeadlessCMS.Domain.Entities;
+﻿using HeadlessCMS.ApplicationCore.Services;
+using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +14,23 @@ namespace HeadlessCMS.WebApi.Controllers
     public abstract class GenericController<TEntity> : ControllerBase where TEntity : BaseEntity
     {
         protected DbSet<TEntity> genericDbSet;
+        protected ApplicationDbContext applicationDbContext;
+        protected IUserService userService;
 
-        protected GenericController(ApplicationDbContext dbContext)
+        public ApplicationDbContext Context { get; }
+
+        protected GenericController(ApplicationDbContext applicationDbContext, IUserService userService)
         {
+            this.userService = userService;
+            this.applicationDbContext = applicationDbContext;
+            applicationDbContext.Database.EnsureCreated();
+            genericDbSet = applicationDbContext.Set<TEntity>();
         }
 
         // GET: api/<GenericController>
         [HttpGet]
         [EnableQuery]
-        public IEnumerable<TEntity> Get()
+        public virtual IEnumerable<TEntity> Get()
         {
             return genericDbSet.ToArray();
         }
@@ -28,7 +39,7 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<TEntity> Get(string id)
+        public virtual ActionResult<TEntity> Get(string id)
         {
             try
             {
@@ -44,31 +55,44 @@ namespace HeadlessCMS.WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
         // POST api/<GenericController>
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public void Post([FromBody] TEntity value)
+        public virtual async Task Post([FromBody] TEntity value)
         {
+            var userId = new Guid(userService.GetCurrentUserId(User));
+            value.CreatedDate = DateTime.Now;
+            value.UpdatedDate = DateTime.Now;
+            value.CreatedBy = userId;
+            value.UpdatedBy = userId;
             genericDbSet.Add(value);
+            await applicationDbContext.SaveChangesAsync();
         }
 
         // PUT api/<GenericController>/5
-        [HttpPut("{id}")]
-        public void Put(string id, [FromBody] TEntity value)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut]
+        public virtual async Task PutAsync([FromBody] TEntity value)
         {
+            var userId = new Guid(userService.GetCurrentUserId(User));
+            value.UpdatedDate = DateTime.Now;
+            value.UpdatedBy = userId;
             genericDbSet.Update(value);
+            await applicationDbContext.SaveChangesAsync();
         }
 
         // DELETE api/<GenericController>/5
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
-        public void Delete(string id)
+        public virtual async Task DeleteAsync(string id)
         {
             var entity = genericDbSet.Find(id);
-            if(entity != null)
+            if (entity != null)
             {
                 genericDbSet.Remove(entity);
+                await applicationDbContext.SaveChangesAsync();
             }
         }
     }

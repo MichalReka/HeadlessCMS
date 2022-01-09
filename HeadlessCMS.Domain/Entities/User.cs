@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HeadlessCMS.ApplicationCore.Dtos;
 
 namespace HeadlessCMS.Domain.Entities
 {
-    public class User : BaseEntity
+    public class User : UserDto
     {
+        public string? RefreshTokens { get; set; }
+        public byte[]? Salt { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using HeadlessCMS.ApplicationCore.Core.Interfaces.Repositories;
-using HeadlessCMS.Persistence.Repositories;
+﻿using HeadlessCMS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
