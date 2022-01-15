@@ -14,14 +14,12 @@ namespace HeadlessCMS.Persistence
 
         public DbSet<Article> Articles { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Media> Medias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Article>().ToTable("Article");
             modelBuilder.Entity<User>().ToTable("User");
-            modelBuilder.Entity<UserRole>().ToTable("UserRole");
             modelBuilder.Entity<Media>().ToTable("Media");
 
             DbInitializer.Initialize(modelBuilder, _passwordEncryptService);

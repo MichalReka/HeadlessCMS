@@ -53,7 +53,7 @@ namespace HeadlessCMS.WebApi.Controllers
             return NotFound();
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme), ]
         [HttpPost]
         public async Task Post([FromBody] UserDto userDto)
         {

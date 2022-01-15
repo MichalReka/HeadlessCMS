@@ -11,7 +11,6 @@ namespace HeadlessCMS.ApplicationCore
              IConfiguration configuration)
         {
             serviceCollection.AddScoped<IAuthService, AuthService>();
-            serviceCollection.AddScoped<IUserService, UserService>();
         }
     }
 }

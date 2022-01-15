@@ -1,7 +1,8 @@
-﻿using System.Security.Claims;
+﻿using HeadlessCMS.Domain.Interfaces;
+using System.Security.Claims;
 
 
-namespace HeadlessCMS.ApplicationCore.Services
+namespace HeadlessCMS.Domain.Services
 {
     public class UserService : IUserService
     {

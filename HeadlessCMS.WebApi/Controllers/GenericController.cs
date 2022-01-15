@@ -1,6 +1,7 @@
 ﻿using HeadlessCMS.ApplicationCore.Services;
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
+using HeadlessCMS.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +16,12 @@ namespace HeadlessCMS.WebApi.Controllers
     {
         protected DbSet<TEntity> genericDbSet;
         protected ApplicationDbContext applicationDbContext;
-        protected IUserService userService;
+        protected IBaseEntityRepository baseEntityRepository;
 
-        public ApplicationDbContext Context { get; }
-
-        protected GenericController(ApplicationDbContext applicationDbContext, IUserService userService)
+        protected GenericController(ApplicationDbContext applicationDbContext, IBaseEntityRepository baseEntityRepository)
         {
-            this.userService = userService;
             this.applicationDbContext = applicationDbContext;
+            this.baseEntityRepository = baseEntityRepository;
             applicationDbContext.Database.EnsureCreated();
             genericDbSet = applicationDbContext.Set<TEntity>();
         }
@@ -62,12 +61,7 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpPost]
         public virtual async Task Post([FromBody] TEntity value)
         {
-            var userId = new Guid(userService.GetCurrentUserId(User));
-            value.CreatedDate = DateTime.Now;
-            value.UpdatedDate = DateTime.Now;
-            value.CreatedBy = userId;
-            value.UpdatedBy = userId;
-            genericDbSet.Add(value);
+            baseEntityRepository.Add(genericDbSet,value,User);
             await applicationDbContext.SaveChangesAsync();
         }
 
@@ -76,10 +70,7 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpPut]
         public virtual async Task PutAsync([FromBody] TEntity value)
         {
-            var userId = new Guid(userService.GetCurrentUserId(User));
-            value.UpdatedDate = DateTime.Now;
-            value.UpdatedBy = userId;
-            genericDbSet.Update(value);
+            baseEntityRepository.Update(genericDbSet, value, User);
             await applicationDbContext.SaveChangesAsync();
         }
 

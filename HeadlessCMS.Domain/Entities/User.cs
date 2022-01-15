@@ -7,4 +7,10 @@ namespace HeadlessCMS.Domain.Entities
         public string? RefreshTokens { get; set; }
         public byte[]? Salt { get; set; }
     }
+
+    public enum UserRole
+    {
+        BaseUser,
+        Admin
+    }
 }

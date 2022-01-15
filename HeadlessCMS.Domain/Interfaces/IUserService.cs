@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace HeadlessCMS.ApplicationCore.Services
+namespace HeadlessCMS.Domain.Interfaces
 {
     public interface IUserService
     {

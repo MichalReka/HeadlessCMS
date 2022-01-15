@@ -12,6 +12,7 @@ namespace HeadlessCMS.ApplicationCore
         {
             serviceCollection.AddScoped<IPasswordEncryptService, PasswordEncryptService>();
             serviceCollection.AddScoped<ITokenService, TokenService>();
+            serviceCollection.AddScoped<IUserService, UserService>();
         }
     }
 }

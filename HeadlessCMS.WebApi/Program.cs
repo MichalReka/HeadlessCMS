@@ -1,5 +1,6 @@
 ﻿using HeadlessCMS.ApplicationCore;
 using HeadlessCMS.ApplicationCore.Core.Configurations;
+using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
@@ -70,13 +71,6 @@ builder.Services.AddAuthentication(x =>
 })
 .AddJwtBearer(jwtBearerOptions => options(jwtBearerOptions))
 .AddJwtBearer("refresh", jwtBearerOptions => options(jwtBearerOptions));
-
-//builder.Services.AddAuthorization(auth =>
-//{
-//    auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
-//        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-//        .RequireAuthenticatedUser().Build());
-//});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

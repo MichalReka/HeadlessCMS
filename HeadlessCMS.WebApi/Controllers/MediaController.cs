@@ -1,5 +1,6 @@
 ﻿using HeadlessCMS.ApplicationCore.Services;
 using HeadlessCMS.Domain.Entities;
+using HeadlessCMS.Domain.Interfaces;
 using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
