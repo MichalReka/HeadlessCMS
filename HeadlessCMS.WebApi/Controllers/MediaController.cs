@@ -2,6 +2,7 @@
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Domain.Interfaces;
 using HeadlessCMS.Persistence;
+using HeadlessCMS.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -12,7 +13,7 @@ namespace HeadlessCMS.WebApi.Controllers
     [ApiController]
     public class MediasController : GenericController<Media>
     {
-        public MediasController(ApplicationDbContext context, IUserService userSerivce) : base(context, userSerivce)
+        public MediasController(ApplicationDbContext context, IBaseEntityRepository baseEntityRepository) : base(context, baseEntityRepository)
         {
         }
     }

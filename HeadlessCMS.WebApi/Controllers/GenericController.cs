@@ -61,7 +61,7 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpPost]
         public virtual async Task Post([FromBody] TEntity value)
         {
-            baseEntityRepository.Add(genericDbSet,value,User);
+            baseEntityRepository.Add(value,User);
             await applicationDbContext.SaveChangesAsync();
         }
 
@@ -70,7 +70,7 @@ namespace HeadlessCMS.WebApi.Controllers
         [HttpPut]
         public virtual async Task PutAsync([FromBody] TEntity value)
         {
-            baseEntityRepository.Update(genericDbSet, value, User);
+            baseEntityRepository.Update( value, User);
             await applicationDbContext.SaveChangesAsync();
         }
 
