@@ -1,4 +1,7 @@
-﻿using HeadlessCMS.ApplicationCore.Services;
+﻿using AutoMapper;
+using HeadlessCMS.ApplicationCore.Dtos;
+using HeadlessCMS.ApplicationCore.Services;
+using HeadlessCMS.Domain.Dtos;
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
 using HeadlessCMS.Persistence.Repositories;
@@ -12,26 +15,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HeadlessCMS.WebApi.Controllers
 {
-    public abstract class GenericController<TEntity> : ControllerBase where TEntity : BaseEntity
+    public abstract class GenericController<TEntity, TEntityDto> : ControllerBase 
+        where TEntity : BaseEntity  
+        where TEntityDto : BaseEntityDto
     {
         protected DbSet<TEntity> genericDbSet;
         protected ApplicationDbContext applicationDbContext;
         protected IBaseEntityRepository baseEntityRepository;
+        protected IMapper _mapper;
 
-        protected GenericController(ApplicationDbContext applicationDbContext, IBaseEntityRepository baseEntityRepository)
+        protected GenericController(ApplicationDbContext applicationDbContext, IBaseEntityRepository baseEntityRepository, IMapper mapper)
         {
             this.applicationDbContext = applicationDbContext;
             this.baseEntityRepository = baseEntityRepository;
             applicationDbContext.Database.EnsureCreated();
             genericDbSet = applicationDbContext.Set<TEntity>();
+            _mapper = mapper;
         }
 
         // GET: api/<GenericController>
         [HttpGet]
         [EnableQuery]
-        public virtual IEnumerable<TEntity> Get()
+        public virtual IEnumerable<TEntityDto> Get()
         {
-            return genericDbSet.ToArray();
+            var mappedSet = _mapper.ProjectTo<TEntityDto>(genericDbSet);
+            return mappedSet.ToArray();
         }
 
         // GET api/<GenericController>/5

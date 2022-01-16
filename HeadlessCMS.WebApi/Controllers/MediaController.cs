@@ -1,6 +1,6 @@
-﻿using HeadlessCMS.ApplicationCore.Services;
+﻿using AutoMapper;
+using HeadlessCMS.Domain.Dtos;
 using HeadlessCMS.Domain.Entities;
-using HeadlessCMS.Domain.Interfaces;
 using HeadlessCMS.Persistence;
 using HeadlessCMS.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +11,12 @@ namespace HeadlessCMS.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MediasController : GenericController<Media>
+    public class MediasController : GenericController<Media, MediaDto>
     {
-        public MediasController(ApplicationDbContext context, IBaseEntityRepository baseEntityRepository) : base(context, baseEntityRepository)
+        public MediasController(ApplicationDbContext context,
+            IBaseEntityRepository baseEntityRepository,
+            IMapper mapper)
+            : base(context, baseEntityRepository, mapper)
         {
         }
     }

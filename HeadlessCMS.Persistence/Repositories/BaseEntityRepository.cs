@@ -1,4 +1,6 @@
-﻿using HeadlessCMS.Domain.Entities;
+﻿using AutoMapper;
+using HeadlessCMS.ApplicationCore.Dtos;
+using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -9,11 +11,14 @@ namespace HeadlessCMS.Persistence.Repositories
     {
         private IUserService _userService;
         private ApplicationDbContext _applicationDbContext;
+        private readonly IMapper _mapper;
 
-        public BaseEntityRepository(IUserService userService, ApplicationDbContext applicationDbContext)
+
+        public BaseEntityRepository(IUserService userService, ApplicationDbContext applicationDbContext, IMapper mapper)
         {
             _userService = userService;
             _applicationDbContext = applicationDbContext;
+            _mapper = mapper;
         }
 
         public void Add<TEntity>(TEntity entity, ClaimsPrincipal user) where TEntity : BaseEntity
@@ -23,12 +28,11 @@ namespace HeadlessCMS.Persistence.Repositories
             var userId = new Guid(_userService.GetCurrentUserId(user));
             var userRecord = GetUserFromId(userId);
 
+            entity.Id = Guid.NewGuid();
             entity.CreatedDate = DateTime.Now;
             entity.UpdatedDate = DateTime.Now;
             entity.CreatedById = userId;
-            entity.CreatedBy = userRecord;
             entity.UpdatedById = userId;
-            entity.UpdatedBy = userRecord;
             dbSet.Add(entity);
         }
 
@@ -48,7 +52,7 @@ namespace HeadlessCMS.Persistence.Repositories
         private User? GetUserFromId(Guid userId)
         {
             var userDbSet = _applicationDbContext.Set<User>();
-            return userDbSet.Find(userId);
+            return userDbSet.AsNoTracking().First(user => user.Id==userId);
         }
     }
 }

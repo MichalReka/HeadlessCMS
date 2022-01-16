@@ -1,6 +1,8 @@
-﻿namespace HeadlessCMS.Domain.Entities
+﻿using HeadlessCMS.Domain.Entities;
+
+namespace HeadlessCMS.Domain.Dtos
 {
-    public class Article : BaseEntity
+    public class ArticleDto : BaseEntityDto
     {
         public string? Title { get; set; }
         public Guid LeadImageId { get; set; }
