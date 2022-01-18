@@ -6,3 +6,4 @@
         public decimal Size { get; set; }
     }
 }
+  
