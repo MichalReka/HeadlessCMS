@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using HeadlessCMS.ApplicationCore.Services;
 using HeadlessCMS.Domain.Dtos;
 using HeadlessCMS.Domain.Entities;
-using HeadlessCMS.Domain.Interfaces;
 using HeadlessCMS.Persistence;
 using HeadlessCMS.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +13,9 @@ namespace HeadlessCMS.WebApi.Controllers
     [ApiController]
     public class ArticlesController : GenericController<Article, ArticleDto>
     {
-        public ArticlesController(ApplicationDbContext context, 
-            IBaseEntityRepository baseEntityRepository, 
-            IMapper mapper) 
+        public ArticlesController(ApplicationDbContext context,
+            IBaseEntityRepository baseEntityRepository,
+            IMapper mapper)
             : base(context, baseEntityRepository, mapper)
         {
         }
