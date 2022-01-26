@@ -1,4 +1,5 @@
-﻿using HeadlessCMS.ApplicationCore;
+﻿using Azure.Storage.Blobs;
+using HeadlessCMS.ApplicationCore;
 using HeadlessCMS.ApplicationCore.Core.Configurations;
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
@@ -21,6 +22,7 @@ builder.Services.AddSQLDbContext(builder.Configuration);
 builder.Services.AddDomainServices(builder.Configuration);
 builder.Services.AddApplicationCoreServices(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MapperProfile));
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers().AddOData(options => options.Select().Filter().OrderBy());
 builder.Services.AddCors(options =>
 {

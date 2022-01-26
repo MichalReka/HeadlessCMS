@@ -6,6 +6,5 @@
         public Guid LeadImageId { get; set; }
         public string? Content { get; set; }
         public ICollection<Media>? Medias { get; set; }
-        public bool IsUnique { get; set; }
     }
 }
