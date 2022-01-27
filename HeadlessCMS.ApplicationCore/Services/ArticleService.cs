@@ -27,7 +27,7 @@ namespace HeadlessCMS.ApplicationCore.Services
             ValidateArticle(articleDto);
 
             Article article = _mapper.Map<Article>(articleDto);
-            await _mediaService.PrepareArticleToStore(article);
+            await _mediaService.PrepareArticleToStore(article, articleDto.LeadImage);
             _baseEntityRepository.Add(article, _httpContextAccessor.HttpContext.User);
         }
 

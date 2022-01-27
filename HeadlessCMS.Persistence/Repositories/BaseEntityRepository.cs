@@ -21,7 +21,7 @@ namespace HeadlessCMS.Persistence.Repositories
             _mapper = mapper;
         }
 
-        public void Add<TEntity>(TEntity entity, ClaimsPrincipal user) where TEntity : BaseEntity
+        public TEntity Add<TEntity>(TEntity entity, ClaimsPrincipal user) where TEntity : BaseEntity
         {
             var dbSet = _applicationDbContext.Set<TEntity>();
 
@@ -33,10 +33,10 @@ namespace HeadlessCMS.Persistence.Repositories
             entity.UpdatedDate = DateTime.Now;
             entity.CreatedById = userId;
             entity.UpdatedById = userId;
-            dbSet.Add(entity);
+            return dbSet.Add(entity).Entity;
         }
 
-        public void Update<TEntity>(TEntity entity, ClaimsPrincipal user) where TEntity : BaseEntity
+        public TEntity Update<TEntity>(TEntity entity, ClaimsPrincipal user) where TEntity : BaseEntity
         {
             var dbSet = _applicationDbContext.Set<TEntity>();
 
@@ -46,7 +46,7 @@ namespace HeadlessCMS.Persistence.Repositories
             entity.UpdatedDate = DateTime.Now;
             entity.UpdatedById = userId;
             entity.UpdatedBy = userRecord;
-            dbSet.Update(entity);
+            return dbSet.Update(entity).Entity;
         }
 
         private User? GetUserFromId(Guid userId)
