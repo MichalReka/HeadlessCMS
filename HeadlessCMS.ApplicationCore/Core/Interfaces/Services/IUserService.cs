@@ -1,9 +1,13 @@
-﻿using System.Security.Claims;
+﻿using HeadlessCMS.ApplicationCore.Dtos;
+using HeadlessCMS.Domain.Commands;
+using HeadlessCMS.Domain.Entities;
+using System.Security.Claims;
 
-namespace HeadlessCMS.ApplicationCore.Services
+namespace HeadlessCMS.ApplicationCore.Core.Interfaces.Services
 {
     public interface IUserService
     {
-        public string GetCurrentUserId(ClaimsPrincipal user);
+        Task<User> UpdateUserDataAsync(UserDto userDto);
+        void UpdateUserPassword(ChangePasswordCommand changePasswordCommand);
     }
 }

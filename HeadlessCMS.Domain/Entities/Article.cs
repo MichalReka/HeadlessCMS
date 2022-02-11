@@ -2,11 +2,9 @@
 {
     public class Article : BaseEntity
     {
-        public Guid OwnerId { get; set; }
-        public string? Title { get; set; }
-        public Guid LeadImageId { get; set; }
-        public string? Content { get; set; }
-        public ICollection<Media>? Medias { get; set; }
-        public bool IsUnique { get; set; }
+        public string Title { get; set; }
+        public Guid? LeadImageId { get; set; }
+        public string Content { get; set; }
+        public virtual ICollection<Media>? Medias { get; set; }
     }
 }

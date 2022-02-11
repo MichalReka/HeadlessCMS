@@ -2,7 +2,6 @@
 {
     public class Media : BaseEntity
     {
-        public byte[] Content { get; set; }
-        public decimal Size { get; set; }
+        public string Uri { get; set; }
     }
 }

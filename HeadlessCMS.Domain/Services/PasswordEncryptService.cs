@@ -23,7 +23,7 @@ namespace HeadlessCMS.Domain.Services
                 prf: KeyDerivationPrf.HMACSHA256,
                 iterationCount: _iterCount,
                 numBytesRequested: _length));
-
+             
             return (hashedPassword, salt);
         }
 

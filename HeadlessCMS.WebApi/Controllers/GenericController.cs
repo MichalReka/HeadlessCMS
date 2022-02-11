@@ -1,6 +1,9 @@
-﻿using HeadlessCMS.ApplicationCore.Services;
+﻿using AutoMapper;
+using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
+using HeadlessCMS.Domain.Dtos;
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
+using HeadlessCMS.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,89 +14,93 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HeadlessCMS.WebApi.Controllers
 {
-    public abstract class GenericController<TEntity> : ControllerBase where TEntity : BaseEntity
+    public abstract class GenericController<TEntity, TEntityDto> : ControllerBase
+        where TEntity : BaseEntity
+        where TEntityDto : BaseEntityDto
     {
         protected DbSet<TEntity> genericDbSet;
         protected ApplicationDbContext applicationDbContext;
-        protected IUserService userService;
+        protected IBaseEntityRepository baseEntityRepository;
+        protected IMapper _mapper;
+        protected IPermissionService _permissionService;
 
-        public ApplicationDbContext Context { get; }
-
-        protected GenericController(ApplicationDbContext applicationDbContext, IUserService userService)
+        protected GenericController(ApplicationDbContext applicationDbContext,
+                                    IBaseEntityRepository baseEntityRepository,
+                                    IMapper mapper,
+                                    IPermissionService permissionService)
         {
-            this.userService = userService;
             this.applicationDbContext = applicationDbContext;
+            this.baseEntityRepository = baseEntityRepository;
             applicationDbContext.Database.EnsureCreated();
             genericDbSet = applicationDbContext.Set<TEntity>();
+            _mapper = mapper;
+            _permissionService = permissionService;
         }
 
         // GET: api/<GenericController>
         [HttpGet]
         [EnableQuery]
-        public virtual IEnumerable<TEntity> Get()
+        public virtual IEnumerable<TEntityDto> Get()
         {
-            return genericDbSet.ToArray();
-        }
-
-        // GET api/<GenericController>/5
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public virtual ActionResult<TEntity> Get(string id)
-        {
-            try
-            {
-                TEntity? entity = genericDbSet.Find(Guid.Parse(id));
-
-                if (entity == null)
-                {
-                    return NotFound();
-                }
-                return entity;
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var mappedSet = _mapper.Map<TEntityDto[]>(genericDbSet.ToArray());
+            return mappedSet;
         }
 
         // POST api/<GenericController>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public virtual async Task Post([FromBody] TEntity value)
+        public virtual async Task<TEntityDto> Post([FromBody] TEntityDto value)
         {
-            var userId = new Guid(userService.GetCurrentUserId(User));
-            value.CreatedDate = DateTime.Now;
-            value.UpdatedDate = DateTime.Now;
-            value.CreatedBy = userId;
-            value.UpdatedBy = userId;
-            genericDbSet.Add(value);
+            var entity = _mapper.Map<TEntity>(value);
+            entity = baseEntityRepository.Add(entity, User);
             await applicationDbContext.SaveChangesAsync();
+
+            return _mapper.Map<TEntityDto>(entity);
         }
 
         // PUT api/<GenericController>/5
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
-        public virtual async Task PutAsync([FromBody] TEntity value)
+        public virtual async Task<IActionResult> PutAsync([FromBody] TEntityDto value)
         {
-            var userId = new Guid(userService.GetCurrentUserId(User));
-            value.UpdatedDate = DateTime.Now;
-            value.UpdatedBy = userId;
-            genericDbSet.Update(value);
+            try
+            {
+                _permissionService.ValidateOwnership<TEntity>(User, value.Id.ToString());
+            }
+            catch (Exception e)
+            {
+                return Unauthorized(e.Message);
+            }
+
+            var entity = _mapper.Map<TEntity>(value);
+            entity = baseEntityRepository.Update(entity, User);
             await applicationDbContext.SaveChangesAsync();
+
+            return Ok(_mapper.Map<TEntityDto>(entity));
         }
 
         // DELETE api/<GenericController>/5
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
-        public virtual async Task DeleteAsync(string id)
+        public virtual async Task<IActionResult> DeleteAsync(string id)
         {
-            var entity = genericDbSet.Find(id);
+            try
+            {
+                _permissionService.ValidateOwnership<TEntity>(User, id);
+            }
+            catch(Exception e)
+            {
+                return Unauthorized(e.Message);
+            }
+
+            var entity = genericDbSet.FirstOrDefault(x => x.Id.ToString() == id);
             if (entity != null)
             {
                 genericDbSet.Remove(entity);
                 await applicationDbContext.SaveChangesAsync();
             }
+
+            return Ok();
         }
     }
 }

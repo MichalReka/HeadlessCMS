@@ -14,14 +14,32 @@ namespace HeadlessCMS.Persistence
 
         public DbSet<Article> Articles { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Media> Medias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Article>()
+            .HasOne(p => p.CreatedBy)
+            .WithMany(b => b.CreatedArticles)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<Media>()
+            .HasOne(p => p.CreatedBy)
+            .WithMany(b => b.CreatedMedias)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<Article>()
+            .HasOne(p => p.UpdatedBy)
+            .WithMany(b => b.UpdatedArticles)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<Media>()
+            .HasOne(p => p.UpdatedBy)
+            .WithMany(b => b.UpdatedMedias)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
             modelBuilder.Entity<Article>().ToTable("Article");
             modelBuilder.Entity<User>().ToTable("User");
-            modelBuilder.Entity<UserRole>().ToTable("UserRole");
             modelBuilder.Entity<Media>().ToTable("Media");
 
             DbInitializer.Initialize(modelBuilder, _passwordEncryptService);
