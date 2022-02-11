@@ -9,14 +9,12 @@ namespace HeadlessCMS.Persistence.Repositories
 {
     public class BaseEntityRepository : IBaseEntityRepository
     {
-        private IUserService _userService;
         private ApplicationDbContext _applicationDbContext;
         private readonly IMapper _mapper;
 
 
-        public BaseEntityRepository(IUserService userService, ApplicationDbContext applicationDbContext, IMapper mapper)
+        public BaseEntityRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
         {
-            _userService = userService;
             _applicationDbContext = applicationDbContext;
             _mapper = mapper;
         }
@@ -25,7 +23,7 @@ namespace HeadlessCMS.Persistence.Repositories
         {
             var dbSet = _applicationDbContext.Set<TEntity>();
 
-            var userId = new Guid(_userService.GetCurrentUserId(user));
+            var userId = new Guid(user.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
             var userRecord = GetUserFromId(userId);
 
             entity.Id = Guid.NewGuid();
@@ -33,6 +31,7 @@ namespace HeadlessCMS.Persistence.Repositories
             entity.UpdatedDate = DateTime.Now;
             entity.CreatedById = userId;
             entity.UpdatedById = userId;
+            entity.OwnerId = userId;
             return dbSet.Add(entity).Entity;
         }
 
@@ -40,12 +39,14 @@ namespace HeadlessCMS.Persistence.Repositories
         {
             var dbSet = _applicationDbContext.Set<TEntity>();
 
-            var userId = new Guid(_userService.GetCurrentUserId(user));
-            var userRecord = GetUserFromId(userId);
+            var userId = new Guid(user.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+            var updatingUserRecord = GetUserFromId(userId);
+            var originalCreatedUser = GetUserFromId(entity.CreatedById);
 
             entity.UpdatedDate = DateTime.Now;
             entity.UpdatedById = userId;
-            entity.UpdatedBy = userRecord;
+            entity.UpdatedBy = updatingUserRecord;
+            entity.CreatedBy = originalCreatedUser;
             return dbSet.Update(entity).Entity;
         }
 

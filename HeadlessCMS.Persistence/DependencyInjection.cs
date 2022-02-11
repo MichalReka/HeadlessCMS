@@ -10,7 +10,10 @@ namespace HeadlessCMS.Persistence
         public static void AddSQLDbContext(this IServiceCollection serviceCollection,
              IConfiguration configuration)
         {
-            serviceCollection.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            serviceCollection.AddDbContext<ApplicationDbContext>(options => {
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                options.UseLazyLoadingProxies();
+            });
             serviceCollection.AddScoped<IBaseEntityRepository, BaseEntityRepository>();
         }
 

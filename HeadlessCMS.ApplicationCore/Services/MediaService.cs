@@ -1,9 +1,11 @@
 ﻿using Azure.Storage.Blobs;
 using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
 using HeadlessCMS.Domain.Entities;
+using HeadlessCMS.Persistence;
 using HeadlessCMS.Persistence.Repositories;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace HeadlessCMS.ApplicationCore.Services
 {
@@ -12,18 +14,28 @@ namespace HeadlessCMS.ApplicationCore.Services
         readonly IBaseEntityRepository _baseEntityRepository;
         readonly BlobContainerClient _blobContainerClient;
         readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ApplicationDbContext _dbContext;
 
-        public MediaService(IBaseEntityRepository baseEntityRepository, BlobContainerClient blobContainerClient, IHttpContextAccessor httpContextAccessor)
+        public MediaService(IBaseEntityRepository baseEntityRepository, 
+            BlobContainerClient blobContainerClient, 
+            IHttpContextAccessor httpContextAccessor,
+            ApplicationDbContext dbContext)
         {
             _baseEntityRepository = baseEntityRepository;
             _blobContainerClient = blobContainerClient;
             _httpContextAccessor = httpContextAccessor;
+            _dbContext = dbContext;
         }
 
         public async Task PrepareArticleToStore(Article article, string? leadImageString)
         {
             await MapContentToMedia(article);
-            await CreateMediaFromLeadImage(article, leadImageString);
+            article.LeadImageId = leadImageString != null && leadImageString.Length > 0 ? (await CreateMediaFromImage(leadImageString)).Id : null;
+        }
+
+        public async Task PrepareUserToStore(User user, string? profileImageString)
+        {
+            user.ProfilePictureId = profileImageString != null ? (await CreateMediaFromImage(profileImageString)).Id : null;
         }
 
         private async Task MapContentToMedia(Article article)
@@ -44,16 +56,9 @@ namespace HeadlessCMS.ApplicationCore.Services
                 var src = node.GetAttributeValue("src", "");
                 if (src != "")
                 {
-                    string uri = await UploadToBlob(src);
+                    string uri = (await CreateMediaFromImage(src)).Uri;
 
                     node.SetAttributeValue("src", uri);
-
-                    Media media = new Media{
-                        Uri = uri
-                    };
-
-                    medias.Add(media);
-                    _baseEntityRepository.Add(media, _httpContextAccessor.HttpContext.User);
                 }
             }
 
@@ -65,17 +70,20 @@ namespace HeadlessCMS.ApplicationCore.Services
             sw.Close();
         }
 
-        private async Task CreateMediaFromLeadImage(Article article, string leadImageString)
+        private async Task<Media> CreateMediaFromImage(string imageString)
         {
-            string uri = await UploadToBlob(leadImageString);
+            Media? image = GetMediaFromUri(imageString);
 
-            Media media = new Media
+            if(image != null)
             {
-                Uri = uri
-            };
+                return image;
+            }
 
-            Guid leadImageId = _baseEntityRepository.Add(media, _httpContextAccessor.HttpContext.User).Id;
-            article.LeadImageId = leadImageId;
+            string uri = await UploadToBlob(imageString);
+
+            image = CreateMediaFromUri(uri);
+
+            return image;
         }
 
         private async Task<string> UploadToBlob(string img) {
@@ -106,6 +114,35 @@ namespace HeadlessCMS.ApplicationCore.Services
             int pTo = source.LastIndexOf(secondSubstring);
 
             return source.Substring(pFrom, pTo - pFrom);
+        }
+
+        private Media? GetMediaFromUri(string imageString)
+        {
+            if(imageString.StartsWith("http"))
+            {
+                var media = _dbContext.Set<Media>().AsNoTracking().FirstOrDefault(x => x.Uri == imageString);
+                if(media != null)
+                {
+                    return media;
+                }
+                else
+                {
+                    return CreateMediaFromUri(imageString);
+                }
+            }
+
+            return null;
+        }
+
+        private Media CreateMediaFromUri(string uri)
+        {
+            Media media = new Media
+            {
+                Uri = uri
+            };
+
+            var image = _baseEntityRepository.Add(media, _httpContextAccessor.HttpContext.User);
+            return image;
         }
     }
 }

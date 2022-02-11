@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
 using HeadlessCMS.Domain.Dtos;
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
@@ -21,14 +22,19 @@ namespace HeadlessCMS.WebApi.Controllers
         protected ApplicationDbContext applicationDbContext;
         protected IBaseEntityRepository baseEntityRepository;
         protected IMapper _mapper;
+        protected IPermissionService _permissionService;
 
-        protected GenericController(ApplicationDbContext applicationDbContext, IBaseEntityRepository baseEntityRepository, IMapper mapper)
+        protected GenericController(ApplicationDbContext applicationDbContext,
+                                    IBaseEntityRepository baseEntityRepository,
+                                    IMapper mapper,
+                                    IPermissionService permissionService)
         {
             this.applicationDbContext = applicationDbContext;
             this.baseEntityRepository = baseEntityRepository;
             applicationDbContext.Database.EnsureCreated();
             genericDbSet = applicationDbContext.Set<TEntity>();
             _mapper = mapper;
+            _permissionService = permissionService;
         }
 
         // GET: api/<GenericController>
@@ -36,41 +42,65 @@ namespace HeadlessCMS.WebApi.Controllers
         [EnableQuery]
         public virtual IEnumerable<TEntityDto> Get()
         {
-            var mappedSet = _mapper.ProjectTo<TEntityDto>(genericDbSet);
-            return mappedSet.ToArray();
+            var mappedSet = _mapper.Map<TEntityDto[]>(genericDbSet.ToArray());
+            return mappedSet;
         }
 
         // POST api/<GenericController>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public virtual async Task Post([FromBody] TEntityDto value)
+        public virtual async Task<TEntityDto> Post([FromBody] TEntityDto value)
         {
             var entity = _mapper.Map<TEntity>(value);
-            baseEntityRepository.Add(entity, User);
+            entity = baseEntityRepository.Add(entity, User);
             await applicationDbContext.SaveChangesAsync();
+
+            return _mapper.Map<TEntityDto>(entity);
         }
 
         // PUT api/<GenericController>/5
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
-        public virtual async Task PutAsync([FromBody] TEntityDto value)
+        public virtual async Task<IActionResult> PutAsync([FromBody] TEntityDto value)
         {
+            try
+            {
+                _permissionService.ValidateOwnership<TEntity>(User, value.Id.ToString());
+            }
+            catch (Exception e)
+            {
+                return Unauthorized(e.Message);
+            }
+
             var entity = _mapper.Map<TEntity>(value);
-            baseEntityRepository.Update(entity, User);
+            entity = baseEntityRepository.Update(entity, User);
             await applicationDbContext.SaveChangesAsync();
+
+            return Ok(_mapper.Map<TEntityDto>(entity));
         }
 
         // DELETE api/<GenericController>/5
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
-        public virtual async Task DeleteAsync(string id)
+        public virtual async Task<IActionResult> DeleteAsync(string id)
         {
-            var entity = genericDbSet.Find(id);
+            try
+            {
+                _permissionService.ValidateOwnership<TEntity>(User, id);
+            }
+            catch(Exception e)
+            {
+                return Unauthorized(e.Message);
+            }
+
+            var entity = genericDbSet.FirstOrDefault(x => x.Id.ToString() == id);
             if (entity != null)
             {
                 genericDbSet.Remove(entity);
                 await applicationDbContext.SaveChangesAsync();
             }
+
+            return Ok();
         }
     }
 }

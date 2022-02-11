@@ -21,18 +21,40 @@ namespace HeadlessCMS.WebApi.Controllers
         public ArticlesController(ApplicationDbContext context,
             IBaseEntityRepository baseEntityRepository,
             IArticleService articleService,
-            IMapper mapper)
-            : base(context, baseEntityRepository, mapper)
+            IMapper mapper,
+            IPermissionService permissionService)
+            : base(context, baseEntityRepository, mapper, permissionService)
         {
             _articleService = articleService;
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public override async Task Post([FromBody] ArticleDto value)
+        public override async Task<ArticleDto> Post([FromBody] ArticleDto value)
         {
-            await _articleService.CreateArticle(value);
+            var article = await _articleService.CreateArticle(value);
             await applicationDbContext.SaveChangesAsync();
+            return _mapper.Map<ArticleDto>(article);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut]
+        public override async Task<IActionResult> PutAsync([FromBody] ArticleDto value)
+        {
+            try
+            {
+                _permissionService.ValidateOwnership<Article>(User, value.Id.ToString());
+            }
+            catch (Exception e)
+            {
+                return Unauthorized(e.Message);
+            }
+
+            var article = _mapper.Map<Article>(value);
+            article = await _articleService.UpdateArticle(value);
+            await applicationDbContext.SaveChangesAsync();
+
+            return Ok(_mapper.Map<ArticleDto>(article));
         }
     }
 }

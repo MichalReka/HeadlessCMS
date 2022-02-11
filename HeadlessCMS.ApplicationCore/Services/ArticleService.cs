@@ -22,18 +22,39 @@ namespace HeadlessCMS.ApplicationCore.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task CreateArticle(ArticleDto articleDto)
+        public async Task<Article> CreateArticle(ArticleDto articleDto)
         {
             ValidateArticle(articleDto);
 
+            Article article = await PrepareArticle(articleDto);
+
+            return _baseEntityRepository.Add(article, _httpContextAccessor.HttpContext.User);
+        }
+
+        public async Task<Article> UpdateArticle(ArticleDto articleDto)
+        {
+            ValidateArticle(articleDto);
+
+            Article article = await PrepareArticle(articleDto);
+
+            return _baseEntityRepository.Update(article, _httpContextAccessor.HttpContext.User);
+        }
+
+        private async Task<Article> PrepareArticle(ArticleDto articleDto)
+        {
             Article article = _mapper.Map<Article>(articleDto);
             await _mediaService.PrepareArticleToStore(article, articleDto.LeadImage);
-            _baseEntityRepository.Add(article, _httpContextAccessor.HttpContext.User);
+            return article;
         }
 
         private void ValidateArticle(ArticleDto articleDto)
         {
             if (articleDto.Content == null)
+            {
+                throw new ArgumentException("Artykuł musi posiadać treść");
+            }
+
+            if (articleDto.Title == null)
             {
                 throw new ArgumentException("Artykuł musi posiadać treść");
             }

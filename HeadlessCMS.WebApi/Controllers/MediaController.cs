@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
 using HeadlessCMS.Domain.Dtos;
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
@@ -15,8 +16,9 @@ namespace HeadlessCMS.WebApi.Controllers
     {
         public MediasController(ApplicationDbContext context,
             IBaseEntityRepository baseEntityRepository,
-            IMapper mapper)
-            : base(context, baseEntityRepository, mapper)
+            IMapper mapper,
+            IPermissionService permissionService)
+            : base(context, baseEntityRepository, mapper, permissionService)
         {
         }
     }

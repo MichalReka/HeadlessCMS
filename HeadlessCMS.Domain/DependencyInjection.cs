@@ -3,7 +3,7 @@ using HeadlessCMS.Domain.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HeadlessCMS.ApplicationCore
+namespace HeadlessCMS.Domain
 {
     public static class DependencyInjection
     {
@@ -12,7 +12,6 @@ namespace HeadlessCMS.ApplicationCore
         {
             serviceCollection.AddScoped<IPasswordEncryptService, PasswordEncryptService>();
             serviceCollection.AddScoped<ITokenService, TokenService>();
-            serviceCollection.AddScoped<IUserService, UserService>();
         }
     }
 }

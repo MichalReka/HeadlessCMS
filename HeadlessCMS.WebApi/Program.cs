@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using HeadlessCMS.ApplicationCore;
 using HeadlessCMS.ApplicationCore.Core.Configurations;
+using HeadlessCMS.Domain;
 using HeadlessCMS.Domain.Entities;
 using HeadlessCMS.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,6 +31,7 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins("http://localhost:4200");
+            builder.AllowAnyMethod();
             builder.AllowAnyHeader();
         });
 });

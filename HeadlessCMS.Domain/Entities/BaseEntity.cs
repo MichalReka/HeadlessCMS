@@ -8,8 +8,10 @@ namespace HeadlessCMS.Domain.Entities
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public Guid CreatedById { get; set; }
-        public User? CreatedBy { get; set; }
+        public virtual User CreatedBy { get; set; }
         public Guid UpdatedById { get; set; }
-        public User? UpdatedBy { get; set; }
+        public virtual User UpdatedBy { get; set; }
+        public Guid OwnerId { get; set; }
+        public virtual User Owner { get; set; }
     }
 }

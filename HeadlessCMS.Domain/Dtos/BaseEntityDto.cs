@@ -1,6 +1,4 @@
-﻿
-
-using HeadlessCMS.ApplicationCore.Dtos;
+﻿using HeadlessCMS.ApplicationCore.Dtos;
 namespace HeadlessCMS.Domain.Dtos
 {
     public class BaseEntityDto
@@ -9,8 +7,10 @@ namespace HeadlessCMS.Domain.Dtos
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public Guid CreatedById { get; set; }
-        public UserDto? CreatedBy { get; set; }
+        public virtual UserDto? CreatedBy { get; set; }
         public Guid UpdatedById { get; set; }
-        public UserDto? UpdatedBy { get; set; }
+        public virtual UserDto? UpdatedBy { get; set; }
+        public Guid OwnerId { get; set; }
+        public virtual UserDto? Owner { get; set; }
     }
 }

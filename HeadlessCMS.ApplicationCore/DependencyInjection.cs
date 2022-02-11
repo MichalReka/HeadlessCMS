@@ -4,6 +4,7 @@ using HeadlessCMS.ApplicationCore.Services;
 using HeadlessCMS.ApplicationCore.Core.Interfaces.Services;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using HeadlessCMS.Domain.Interfaces;
 
 namespace HeadlessCMS.ApplicationCore
 {
@@ -22,6 +23,8 @@ namespace HeadlessCMS.ApplicationCore
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IArticleService, ArticleService>();
             serviceCollection.AddScoped<IMediaService, MediaService>();
+            serviceCollection.AddScoped<IPermissionService, PermissionService>();
+            serviceCollection.AddScoped<IUserService, UserService>();
         }
     }
 }
